@@ -18,7 +18,7 @@ podman build -t $GPT_TAG -f Containerfile -v $(readlink -f models):/root/.ollama
 GPT_ID=$(podman images |grep ago |grep $GPT_TAG |awk '{print $3}')
 
 # Run PrivateGPT
-podman run -itd --rm  \
+podman run -it --rm  \
     --replace \
     --net $NETWORK \
     -p 8001:8001 \

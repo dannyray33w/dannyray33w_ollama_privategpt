@@ -15,7 +15,7 @@ WORKDIR ${DIR}
 # Install ollama
 RUN curl -L ${OLLAMA_URL} -o ${OLLAMA_DEST} &&\
     tar -C /usr -xzf ${OLLAMA_DEST} &&\
-    rm -f ${OLLAMA_DEST}
+    rm -f ${OLLAMA_DEST}z
 
 #### PrivateGPT ####
 
@@ -38,6 +38,9 @@ ENV PATH=${PATH}:/bin:${DIR}/.local:${DIR}/.local/bin:${DIR}/.cache/pypoetry/vir
 RUN python3.11 -m venv . &&\
     chmod +x bin/activate &&\
     ./bin/activate
+    
+# Ensure no autopull
+RUN sed -i 's/autopull_models: true/autopull_models: false/g' settings.yaml
 
 # setup poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
