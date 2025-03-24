@@ -3,16 +3,18 @@
 TAG=gpt
 MODEL_DIR=models/blobs
 NETWORK=gpt_net
-APP_DIRS="app models images"
+APP_DIRS="app/private-gpt models images"
 CONTAINER_TARBALL="./images/$TAG.tar"
 
 # Prompt to remove old data
-read -p "Purge old app data? (y/n) " -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    for i in $APP_DIRS; do rm -Rfv $i/* ;done
-    podman image rm --force $TAG
-fi
+for i in $APP_DIRS
+do 
+    read -p "Remove old data from $i? (y/n)" CHOICE
+    if [ "$CHOICE" = "y" ] 
+    then
+        rm -Rfv $i/* ;done
+    fi
+done
 
 for dir in models/blobs images app
 do
