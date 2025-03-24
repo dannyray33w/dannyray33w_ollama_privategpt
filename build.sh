@@ -34,20 +34,8 @@ CONTAINER_ID=$(podman images |grep ago |grep $TAG |awk '{print $3}')
 
 if [ ! -e $CONTAINER_TARBALL ]
 then
-  read -p "Save running container as tarball? (y/n)" CHOICE
-  case $CHOICE in 
-    [yY] ) echo "Saving $CONTAINER_TARBALL..." && podman save -o $CONTAINER_TARBALL $CONTAINER_ID;;
-    [nN] ) exit;;
-    * ) echo "invalid response";
-      exit 1;;
-  esac
+    rm -fv $CONTAINER_TARBALL && podman save -o $CONTAINER_TARBALL $CONTAINER_ID
 else
-  read -p "Overwrite existings tarball? (y/n) " CHOICE
-  case $CHOICE in 
-    [yY] ) rm -fv $CONTAINER_TARBALL && podman save -o $CONTAINER_TARBALL $CONTAINER_ID;;
-    [nN] ) exit;;
-    * ) echo "invalid response";
-      exit 1;;
-  esac
+    podman save -o $CONTAINER_TARBALL $CONTAINER_ID
 fi
 exit 0
