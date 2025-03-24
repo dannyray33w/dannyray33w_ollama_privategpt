@@ -3,7 +3,7 @@
 TAG=gpt
 MODEL_DIR=models/blobs
 NETWORK=gpt_net
-APP_DIRS="app/private-gpt models images"
+APP_DIRS="app/private-gpt models"
 CONTAINER_TARBALL="./images/$TAG.tar"
 
 # Prompt to remove old data
@@ -34,7 +34,7 @@ podman build -t $TAG -f Containerfile \
 # Get container image ID
 CONTAINER_ID=$(podman images |grep ago |grep $TAG |awk '{print $3}')  
 
-if [ ! -e $CONTAINER_TARBALL ]
+if [ -e $CONTAINER_TARBALL ]
 then
     rm -fv $CONTAINER_TARBALL && podman save -o $CONTAINER_TARBALL $CONTAINER_ID
 else
