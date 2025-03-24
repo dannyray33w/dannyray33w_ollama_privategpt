@@ -19,7 +19,7 @@ A tarball of the container image will be saved to the build directory for simple
 
 	- ./build.sh
 
-	- ./run_privategpt_airgap.sh
+	- ./run_privategpt_airgap.sh (15 second delay normal for webui to ensure all services start).
 
 # Notes
 
