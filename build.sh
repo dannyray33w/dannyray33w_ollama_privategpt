@@ -1,30 +1,53 @@
 #!/bin/bash
 # D. Burkhart
-GPT_TAG=gpt
+TAG=gpt
 MODEL_DIR=models/blobs
 NETWORK=gpt_net
+APP_DIRS="app models images"
+CONTAINER_TARBALL="./images/$TAG.tar"
 
-if [ ! -d $MODEL_DIR ]; then
-  mkdir -p models/blobs
+# Prompt to remove old data
+read -p "Purge old app data? (y/n) " -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    for i in $APP_DIRS; do rm -Rfv $i/* ;done
+    podman image rm --force $TAG
 fi
 
+for dir in models/blobs images app
+do
+  if [ ! -d $dir ]; then
+    mkdir -p $dir
+  fi
+done
+
 # Ensure gpt container stopped
-podman container rm -f $GPT_ID 
+podman container rm -f $TAG 
 
 # Build 
-podman build -t $GPT_TAG -f Containerfile -v $(readlink -f models):/root/.ollama/models  -v $(readlink -f app):/root/app
+podman build -t $TAG -f Containerfile \
+  -v $(readlink -f models):/root/.ollama/models \
+  -v $(readlink -f app):/root/app
 
 # Get container image ID
-GPT_ID=$(podman images |grep ago |grep $GPT_TAG |awk '{print $3}')
+CONTAINER_ID=$(podman images |grep ago |grep $TAG |awk '{print $3}')  
 
-# Run PrivateGPT
-podman run -itd --rm  \
-    --replace \
-    --net $NETWORK \
-    -p 8001:8001 \
-    -p 11434:11434 \
-    -v $(readlink -f models):/root/.ollama/models \
-    -v $(readlink -f app):/root/app \
-    --name gpt $GPT_ID
-
-podman exec -it $GPT_TAG bash
+if [ ! -e $CONTAINER_TARBALL ]
+then
+  read -p "Save running container as tarball? (y/n)" CHOICE
+  case $CHOICE in 
+    [yY] ) echo "Saving $CONTAINER_TARBALL..." && podman save -o $CONTAINER_TARBALL $CONTAINER_ID;;
+    [nN] ) exit;;
+    * ) echo "invalid response";
+      exit 1;;
+  esac
+else
+  read -p "Overwrite existings tarball? (y/n) " CHOICE
+  case $CHOICE in 
+    [yY] ) rm -fv $CONTAINER_TARBALL && podman save -o $CONTAINER_TARBALL $CONTAINER_ID;;
+    [nN] ) exit;;
+    * ) echo "invalid response";
+      exit 1;;
+  esac
+fi
+exit 0
