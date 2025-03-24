@@ -26,9 +26,6 @@ do
   fi
 done
 
-# Ensure gpt container stopped
-podman container rm -f $TAG 
-
 # Build 
 podman build -t $TAG -f Containerfile \
   -v $(readlink -f models):/root/.ollama/models \
