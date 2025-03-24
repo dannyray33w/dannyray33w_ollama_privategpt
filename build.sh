@@ -12,7 +12,7 @@ do
     read -p "Remove old data from $i? (y/n)" CHOICE
     if [ "$CHOICE" = "y" ] 
     then
-        rm -Rfv $i/* ;done
+        rm -Rfv $i
     fi
 done
 
