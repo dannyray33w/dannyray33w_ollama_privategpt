@@ -9,11 +9,14 @@ CONTAINER_TARBALL="./images/$TAG.tar"
 # Prompt to remove old data
 for i in $APP_DIRS
 do 
-    read -p "Remove old data from $i? (y/n): " CHOICE
-    if [ "$CHOICE" = "y" ] 
+    if [ -d $i ]
     then
+      read -p "Remove old data from $i? (y/n): " CHOICE
+      if [ "$CHOICE" = "y" ] 
+      then
         rm -Rfv $i
-    fi
+      fi
+    fi  
 done
 
 for dir in models/blobs images app
